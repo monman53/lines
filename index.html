@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <title>Lines</title>
+        <style>
+            body { margin: 0; }
+        </style>
+    </head>
+    <body>
+        <canvas id="hoge" height="100px" width="100%"></canvas>
+        <script>
+            var c = document.getElementById("hoge");
+            var ctx = c.getContext("2d");
+
+            c.width  = window.innerWidth;
+            c.height = 150;
+            
+            function uniform() {
+                return Math.random();
+            }
+
+            function normal(mu, sigma) {
+                var x = uniform();
+                var y = uniform();
+                if(x === 0) return normal(mu, sigma);
+                return Math.sqrt(-2.0*Math.log(x))*Math.cos(2.0*Math.PI*y)*sigma+mu;
+            }
+
+            function drawLine(sx, sy, tx, ty, w, b) {
+                ctx.strokeStyle = 'rgba(0, 80, 150, '+b+')'
+                ctx.lineWidth = w;
+                ctx.beginPath();
+                ctx.moveTo(sx, sy);
+                ctx.lineTo(tx, ty);
+                ctx.stroke(); 
+            }
+
+            var lines = [];
+            var lines_length = 1000;
+            var line_width_mu = 5;
+            var line_width_std = line_width_mu*0.1;
+            var line_deg = Math.exp(2.0/lines_length*Math.log(0.1));
+            var line_length_mu = 300;
+            var line_length_std = line_length_mu*0.1;
+
+            function render() {
+                // clear canvas
+                ctx.clearRect(0, 0, c.width, c.height);
+
+                // add new line
+                var cx = uniform()*c.width;
+                var cy = uniform()*c.height;
+                var theta = uniform()*2.0*Math.PI;
+                var l = normal(line_length_mu, line_width_std);
+                lines.push({
+                    sx: cx-l/2.0*Math.cos(theta),
+                    sy: cy-l/2.0*Math.sin(theta),
+                    tx: cx+l/2.0*Math.cos(theta),
+                    ty: cy+l/2.0*Math.sin(theta),
+                    w: normal(line_width_mu, line_width_std),
+                    b: 1.0,
+                });
+
+                // remove line
+                if(lines.length > lines_length){
+                    lines.shift();
+                }
+
+                // draw lines
+                for(let line of lines){
+                    drawLine(line.sx, line.sy, line.tx, line.ty, line.w, line.b);
+                    line.b *= line_deg;
+                }
+
+                // draw gradient
+                var grad = ctx.createLinearGradient(0, 0, 0, c.height);
+                grad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+                grad.addColorStop(1, 'rgba(255, 255, 255, 1)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, c.width, c.height);
+
+                // frame request
+                window.requestAnimationFrame(render);
+            }
+
+            window.requestAnimationFrame(render);
+        </script>
+    </body>
+</html>
