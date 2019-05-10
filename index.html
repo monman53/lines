@@ -14,7 +14,7 @@
             var ctx = c.getContext("2d");
 
             c.width  = window.innerWidth;
-            c.height = 150;
+            c.height = 100;
             
             function uniform() {
                 return Math.random();
@@ -28,7 +28,7 @@
             }
 
             function drawLine(sx, sy, tx, ty, w, b) {
-                ctx.strokeStyle = 'rgba(0, 80, 150, '+b+')'
+                ctx.strokeStyle = 'rgba(0, 91, 148, '+b+')'
                 ctx.lineWidth = w;
                 ctx.beginPath();
                 ctx.moveTo(sx, sy);
