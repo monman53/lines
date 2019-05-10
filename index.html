@@ -38,10 +38,10 @@
             }
 
             var lines = [];
-            var lines_length = 1000;
+            var lines_max = 100*c.width/100;
             var line_width_mu = 5;
             var line_width_std = line_width_mu*0.1;
-            var line_deg = Math.exp(2.0/lines_length*Math.log(0.1));
+            var line_deg = Math.exp(2.0/lines_max*Math.log(0.1));
             var line_length_mu = 300;
             var line_length_std = line_length_mu*0.1;
 
@@ -64,7 +64,7 @@
                 });
 
                 // remove line
-                if(lines.length > lines_length){
+                if(lines.length > lines_max){
                     lines.shift();
                 }
 
