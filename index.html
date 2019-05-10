@@ -17,14 +17,15 @@
             c.width  = window.innerWidth;
             c.height = 100;
             
-            function uniform() {
+            function rand_uniform() {
                 return Math.random();
             }
 
-            function normal(mu, sigma) {
-                var x = uniform();
-                var y = uniform();
-                if(x === 0) return normal(mu, sigma);
+            function rand_normal(mu, sigma) {
+                // Box-Muller
+                let x = rand_uniform();
+                let y = rand_uniform();
+                if(x === 0) return rand_normal(mu, sigma);
                 return Math.sqrt(-2.0*Math.log(x))*Math.cos(2.0*Math.PI*y)*sigma+mu;
             }
 
@@ -37,29 +38,33 @@
                 ctx.stroke(); 
             }
 
-            var lines = [];
+            // parameters
             var lines_max = 100*c.width/100;
             var line_width_mu = 5;
             var line_width_std = line_width_mu*0.1;
-            var line_deg = Math.exp(2.0/lines_max*Math.log(0.1));
             var line_length_mu = 300;
             var line_length_std = line_length_mu*0.1;
+            var line_deg = Math.exp(2.0/lines_max*Math.log(0.1));
+
+            var lines = [];
 
             function render() {
                 // clear canvas
                 ctx.clearRect(0, 0, c.width, c.height);
 
                 // add new line
-                var cx = uniform()*c.width;
-                var cy = uniform()*c.height;
-                var theta = uniform()*2.0*Math.PI;
-                var l = normal(line_length_mu, line_width_std);
+                let cx = rand_uniform()*c.width;
+                let cy = rand_uniform()*c.height;
+                let theta = rand_uniform()*2.0*Math.PI;
+                let l = rand_normal(line_length_mu, line_width_std);
+                let dx = l*0.5*Math.cos(theta);
+                let dy = l*0.5*Math.sin(theta);
                 lines.push({
-                    sx: cx-l/2.0*Math.cos(theta),
-                    sy: cy-l/2.0*Math.sin(theta),
-                    tx: cx+l/2.0*Math.cos(theta),
-                    ty: cy+l/2.0*Math.sin(theta),
-                    w: normal(line_width_mu, line_width_std),
+                    sx: cx-dx,
+                    sy: cy-dy,
+                    tx: cx+dx,
+                    ty: cy+dy,
+                    w: rand_normal(line_width_mu, line_width_std),
                     b: 1.0,
                 });
 
@@ -75,7 +80,7 @@
                 }
 
                 // draw gradient
-                var grad = ctx.createLinearGradient(0, 0, 0, c.height);
+                let grad = ctx.createLinearGradient(0, 0, 0, c.height);
                 grad.addColorStop(0, 'rgba(255, 255, 255, 0)');
                 grad.addColorStop(1, 'rgba(255, 255, 255, 1)');
                 ctx.fillStyle = grad;
